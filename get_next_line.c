@@ -1,40 +1,46 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ckatelin <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/04/11 20:58:02 by ckatelin          #+#    #+#             */
+/*   Updated: 2019/04/11 21:58:18 by ckatelin         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "get_next_line.h"
 
 
-/* ========WHAT DO I NEED======== */
+//static char *mas[SIZE];
 
-/* ========libftfunctions======== */
-
-/* ========libft.h && .a======== */
-
-/* ===========Makefile========== */
-
-/* ============MAIN============ */
-extern mas;
-
-void	ft_changes(int fd)
+static void	ft_changes(const int fd, char **mas, char **line)
 {
 	int i;
+	char	*tmp;
 	
-	i = 0;	
-	while (mas[fd][i] != '\n' || mas[fd][i] != '\0') //DO I NEED TO USE EOF???
+	i = 0;
+	while (mas[fd][i] != '\n' || mas[fd][i] != '\0')
 	{
 		if (mas[fd][i] == '\n')
 		{
-			*line = ft_strdup(mas[fd]);
-			new = ft_memalloc(i);
-			if (new)
-				new = ft_strcpy(new, mas[fd]);
+			*line = ft_strsub(mas[fd], 0, i);
+			tmp = ft_strdup(mas[fd] + i + 1);
 			free(mas[fd]);
-			mas[fd] = new;
-			free(new);
+			mas[fd] = tmp;
+			free(tmp);
 			break ;
 		}
-		else if (mas[i] == '\0')
+		else if (mas[fd][i] == '\0')
 		{
-			new = ft_strnew(i);
-			if (new)
-				new = ft_strcpy(new, mas);
+//			free(*line);
+			tmp = ft_strdup(mas[fd]);
+//			if (tmp)
+//				tmp = ft_strcpy(tmp, mas[fd]);
+			*line = tmp;
+			free(mas[fd]);
+			free(tmp);
 			break ;
 		}
 		i++;
@@ -44,22 +50,26 @@ void	ft_changes(int fd)
 int	get_next_line(const int fd, char **line)
 {
 	int res;
-	char	*buf;
-	int i;
+	char	buf[BUFF_SIZE + 1];
+	char	*tmp;
+	static char *mas[SIZE];
 
-	if (fd < 0 || line == NULL)
+	if (fd < 0)
 		return (-1);
-	i = -1;
-	while (res = read(fd, buf, BUFF_SIZE) > 0) // do not forget define BUFF_SIZE
+	while ((res = read(fd, buf, BUFF_SIZE)) > 0)
 	{
 		buf[res] = '\0';
-		if (strchr(buf, '\n'))
+		tmp = ft_strjoin(mas[fd], buf);
+		free(mas[fd]);
+		mas[fd] = tmp;
+		free(tmp);
+		if (ft_strchr(buf, '\n'))
 			break ;
 	}
-	if (res == 0)
-		return (0); //one more if with &&
+	if (res == 0  && mas[fd][0] == '\0')
+		return (0); 
 	else if (res < 0)
 		return (-1);
-	ft_changes; //function which will do buf without '\n'
+	ft_changes(fd, mas, line); 
 	return (1);
 }
