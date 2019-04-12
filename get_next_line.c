@@ -13,33 +13,31 @@
 #include "get_next_line.h"
 
 
-//static char *mas[SIZE];
-
-static void	ft_changes(const int fd, char **mas, char **line)
+static void	ft_changes(const int fd, char *mas, char **line)
 {
 	int i;
 	char	*tmp;
 	
 	i = 0;
-	while (mas[fd][i] != '\n' || mas[fd][i] != '\0')
+	while (mas[i] != '\n' || mas[i] != '\0')
 	{
-		if (mas[fd][i] == '\n')
+		if (mas[i] == '\n')
 		{
-			*line = ft_strsub(mas[fd], 0, i);
-			tmp = ft_strdup(mas[fd] + i + 1);
-			free(mas[fd]);
-			mas[fd] = tmp;
+			*line = ft_strsub(mas, 0, i);
+			tmp = ft_strdup(mas + i + 1);
+			free(mas);
+			mas = tmp;
 			free(tmp);
 			break ;
 		}
-		else if (mas[fd][i] == '\0')
+		else if (mas[i] == '\0')
 		{
 //			free(*line);
-			tmp = ft_strdup(mas[fd]);
+			tmp = ft_strdup(mas);
 //			if (tmp)
-//				tmp = ft_strcpy(tmp, mas[fd]);
+//				tmp = ft_strcpy(tmp, mas);
 			*line = tmp;
-			free(mas[fd]);
+			free(mas);
 			free(tmp);
 			break ;
 		}
@@ -52,21 +50,21 @@ int	get_next_line(const int fd, char **line)
 	int res;
 	char	buf[BUFF_SIZE + 1];
 	char	*tmp;
-	static char *mas[SIZE];
+	static char *mas;
 
 	if (fd < 0)
 		return (-1);
 	while ((res = read(fd, buf, BUFF_SIZE)) > 0)
 	{
 		buf[res] = '\0';
-		tmp = ft_strjoin(mas[fd], buf);
-		free(mas[fd]);
-		mas[fd] = tmp;
+		tmp = ft_strjoin(mas, buf);
+		free(mas);
+		mas = tmp;
 		free(tmp);
 		if (ft_strchr(buf, '\n'))
 			break ;
 	}
-	if (res == 0  && mas[fd][0] == '\0')
+	if (res == 0  && mas[0] == '\0')
 		return (0); 
 	else if (res < 0)
 		return (-1);
