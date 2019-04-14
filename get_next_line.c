@@ -6,14 +6,13 @@
 /*   By: ckatelin <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/11 20:58:02 by ckatelin          #+#    #+#             */
-/*   Updated: 2019/04/12 17:23:45 by ckatelin         ###   ########.fr       */
+/*   Updated: 2019/04/14 16:12:21 by ckatelin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <stdio.h> //delete
 
-static	int	ft_find(char *s, char c)
+static	int		ft_find(char *s, char c)
 {
 	while (*s)
 	{
@@ -24,11 +23,11 @@ static	int	ft_find(char *s, char c)
 	return (0);
 }
 
-static void	ft_changes(char **mas, char **line, const int fd)
+static int		ft_changes(char **mas, char **line, const int fd)
 {
-	int i;
-	char	*tmp;
-	
+	int			i;
+	char		*tmp;
+
 	i = 0;
 	while (mas[fd][i] != '\n' && mas[fd][i] != '\0')
 		i++;
@@ -36,62 +35,42 @@ static void	ft_changes(char **mas, char **line, const int fd)
 	{
 		*line = ft_strsub(mas[fd], 0, i);
 		tmp = ft_strdup(mas[fd] + i + 1);
-		free(mas[fd]);
+		ft_strdel(&mas[fd]);
 		mas[fd] = tmp;
-//		printf("mas/n = %s\n", mas[fd]); //delete
-		//free(tmp);
 	}
-	else if (mas[i] == '\0')
+	else if (mas[fd][i] == '\0')
 	{
-		tmp = ft_strdup(mas[fd]);
-		*line = tmp;
-//		printf("*line/0 = %s\n", *line);
-		free(mas[fd]);
-		free(tmp);
+		*line = ft_strdup(mas[fd]);
+		ft_strdel(&mas[fd]);
 	}
+	return (1);
 }
 
-int	get_next_line(const int fd, char **line)
+int				get_next_line(const int fd, char **line)
 {
-	int res;
-	char	buf[BUFF_SIZE + 1];
-	char	*tmp;
-	static char *mas[4096];
-	int find;
+	int			res;
+	char		buf[BUFF_SIZE + 1];
+	char		*tmp;
+	static char	*mas[12000];
 
-	if (fd < 0)
+	if (fd < 0 || read(fd, buf, 0) < 0)
 		return (-1);
-	//res = read(fd, buf, BUFF_SIZE);
-//	printf("res = %d\n", res);
-	while ((res = read(fd, buf, BUFF_SIZE))> 0)
+	if (!mas[fd])
+		mas[fd] = ft_strnew(1);
+	if (ft_find(mas[fd], '\n'))
+		return (ft_changes(mas, line, fd));
+	while ((res = read(fd, buf, BUFF_SIZE)) > 0)
 	{
-//		printf("res = %d\n", res);
 		buf[res] = '\0';
-//		printf("buf = %s\n", buf);
-//		mas = ft_strjoin(mas, buf);
-		if (!mas[fd])
-			mas[fd] = ft_strnew(1);
 		tmp = ft_strjoin(mas[fd], buf);
-//		printf("tmp = %s\n", tmp);
-		free(mas[fd]);
+		ft_strdel(&mas[fd]);
 		mas[fd] = tmp;
-//		printf("mas = %s\n", mas[fd]);
-		//free(mas);
-		//mas = tmp;
-		//free(tmp);
-		if ( (find = ft_find(buf, '\n')))
-		{
-			//printf("find = %d\n", find);
+		if (ft_find(buf, '\n'))
 			break ;
-		}
 	}
-//	printf("break\n");
-	if (res == 0)
-		return (0); 
+	if (res == 0 && (!mas[fd] || mas[fd][0] == '\0'))
+		return (0);
 	else if (res < 0)
 		return (-1);
-	ft_changes(mas, line, fd);
-//	printf("result = %s\n", *line);
-//	printf("result2 = %s\n", mas[fd]);
-	return (1);
+	return (ft_changes(mas, line, fd));
 }

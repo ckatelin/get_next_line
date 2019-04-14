@@ -1,26 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   ft_strmap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ckatelin <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/04/14 12:15:39 by ckatelin          #+#    #+#             */
-/*   Updated: 2019/04/14 13:07:13 by ckatelin         ###   ########.fr       */
+/*   Created: 2019/04/05 20:12:26 by ckatelin          #+#    #+#             */
+/*   Updated: 2019/04/08 15:05:17 by ckatelin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+#include "libft.h"
 
-# define BUFF_SIZE 21
-# include <sys/types.h>
-# include <sys/uio.h>
-# include <unistd.h>
-# include "./libft/libft.h"
-# include <stdlib.h>
-# include <fcntl.h>
+char		*ft_strmap(char const *s, char (*f)(char))
+{
+	size_t	i;
+	char	*s1;
 
-int get_next_line(const int fd, char **line);
-
-#endif
+	i = 0;
+	if (s && (*f))
+	{
+		while (s[i])
+			i++;
+	}
+	s1 = ft_strnew(i);
+	if (s1 && (*f))
+	{
+		i = 0;
+		while (s[i])
+		{
+			s1[i] = (*f)(s[i]);
+			i++;
+		}
+		s1[i] = '\0';
+	}
+	return (s1);
+}

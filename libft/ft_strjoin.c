@@ -1,26 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   ft_strjoin.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ckatelin <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/04/14 12:15:39 by ckatelin          #+#    #+#             */
-/*   Updated: 2019/04/14 13:07:13 by ckatelin         ###   ########.fr       */
+/*   Created: 2019/04/05 20:47:16 by ckatelin          #+#    #+#             */
+/*   Updated: 2019/04/08 21:18:08 by ckatelin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+#include "libft.h"
 
-# define BUFF_SIZE 21
-# include <sys/types.h>
-# include <sys/uio.h>
-# include <unistd.h>
-# include "./libft/libft.h"
-# include <stdlib.h>
-# include <fcntl.h>
+char		*ft_strjoin(char const *s1, char const *s2)
+{
+	size_t	i;
+	size_t	j;
+	char	*mas;
+	size_t	len1;
+	size_t	len2;
 
-int get_next_line(const int fd, char **line);
-
-#endif
+	if (!s1 || !s2)
+		return (NULL);
+	len1 = ft_strlen(s1);
+	len2 = ft_strlen(s2);
+	if (!(mas = ft_strnew(len1 + len2)))
+		return (NULL);
+	i = 0;
+	while (i < len1)
+	{
+		*(mas + i) = *(s1 + i);
+		i++;
+	}
+	j = 0;
+	while (j < len2)
+		*(mas + i++) = *(s2 + j++);
+	return (mas);
+}
